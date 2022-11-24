@@ -34,6 +34,23 @@ func (vm *VM) LastPoppedStackElem() object.Object {
 	return vm.stack[vm.sp]
 }
 
+func (vm *VM) push(o object.Object) error {
+	if vm.sp >= StackSize {
+		return fmt.Errorf("stack overflow")
+	}
+
+	vm.stack[vm.sp] = o
+	vm.sp++
+
+	return nil
+}
+
+func (vm *VM) pop() object.Object {
+	o := vm.stack[vm.sp-1]
+	vm.sp--
+	return o
+}
+
 func (vm *VM) Run() error {
 	for ip := 0; ip < len(vm.instructions); ip++ {
 		op := code.Opcode(vm.instructions[ip])
@@ -66,6 +83,16 @@ func (vm *VM) Run() error {
 			}
 		case code.OpFalse:
 			err := vm.push(False)
+			if err != nil {
+				return err
+			}
+		case code.OpBang:
+			err := vm.executeBangOperator()
+			if err != nil {
+				return err
+			}
+		case code.OpMinus:
+			err := vm.executeMinusOperator()
 			if err != nil {
 				return err
 			}
@@ -156,19 +183,25 @@ func nativeBoolToBooleanObject(input bool) *object.Boolean {
 	return False
 }
 
-func (vm *VM) push(o object.Object) error {
-	if vm.sp >= StackSize {
-		return fmt.Errorf("stack overflow")
+func (vm *VM) executeBangOperator() error {
+	operand := vm.pop()
+	switch operand {
+	case True:
+		return vm.push(False)
+	case False:
+		return vm.push(True)
+	default:
+		return vm.push(False)
 	}
-
-	vm.stack[vm.sp] = o
-	vm.sp++
-
-	return nil
 }
 
-func (vm *VM) pop() object.Object {
-	o := vm.stack[vm.sp-1]
-	vm.sp--
-	return o
+func (vm *VM) executeMinusOperator() error {
+	operand := vm.pop()
+
+	if operand.Type() != object.INTEGER_OBJ {
+		return fmt.Errorf("unsupported type for negation: %s", operand.Type())
+	}
+
+	value := operand.(*object.Integer).Value
+	return vm.push(&object.Integer{Value: -value})
 }
