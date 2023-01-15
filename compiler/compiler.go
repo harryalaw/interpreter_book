@@ -32,6 +32,14 @@ func New() *Compiler {
 	}
 }
 
+func NewWithState(s *SymbolTable, constants []object.Object) *Compiler {
+	compiler := New()
+	compiler.symbolTable = s
+	compiler.constants = constants
+
+	return compiler
+}
+
 func (c *Compiler) Compile(node ast.Node) error {
 	switch node := node.(type) {
 	case *ast.Program:
@@ -150,7 +158,7 @@ func (c *Compiler) Compile(node ast.Node) error {
 		if !ok {
 			return fmt.Errorf("undefined variable %s", node.Value)
 		}
-        c.emit(code.OpGetGlobal, symbol.Index)
+		c.emit(code.OpGetGlobal, symbol.Index)
 
 	case *ast.PrefixExpression:
 		err := c.Compile(node.Right)

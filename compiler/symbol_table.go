@@ -31,6 +31,6 @@ func (s *SymbolTable) Define(name string) Symbol {
 }
 
 func (s *SymbolTable) Resolve(name string) (Symbol, bool) {
-    obj, ok := s.store[name]
-    return obj, ok
+	obj, ok := s.store[name]
+	return obj, ok
 }
