@@ -444,6 +444,49 @@ func TestFunctions(t *testing.T) {
 				code.Make(code.OpPop),
 			},
 		},
+		{
+			input: `fn() { 5 + 10 }`,
+			expectedConstants: []interface{}{
+				5, 10, []code.Instructions{
+					code.Make(code.OpConstant, 0),
+					code.Make(code.OpConstant, 1),
+					code.Make(code.OpAdd),
+					code.Make(code.OpReturnValue),
+				},
+			},
+			expectedInstructions: []code.Instructions{
+				code.Make(code.OpConstant, 2),
+				code.Make(code.OpPop),
+			},
+		},
+		{
+			input: `fn() {1;2}`,
+			expectedConstants: []interface{}{
+				1, 2, []code.Instructions{
+					code.Make(code.OpConstant, 0),
+                    code.Make(code.OpPop),
+					code.Make(code.OpConstant, 1),
+					code.Make(code.OpReturnValue),
+				},
+			},
+			expectedInstructions: []code.Instructions{
+				code.Make(code.OpConstant, 2),
+				code.Make(code.OpPop),
+			},
+		},
+		{
+			input: `fn() {}`,
+			expectedConstants: []interface{}{
+				[]code.Instructions{
+					code.Make(code.OpReturnValue),
+				},
+			},
+			expectedInstructions: []code.Instructions{
+				code.Make(code.OpConstant, 0),
+				code.Make(code.OpPop),
+			},
+		},
+
 	}
 
 	runCompilerTests(t, tests)
@@ -480,24 +523,24 @@ func TestCompilerScopes(t *testing.T) {
 			compiler.scopeIndex, 0)
 	}
 
-    compiler.emit(code.OpAdd)
+	compiler.emit(code.OpAdd)
 
-    if len(compiler.scopes[compiler.scopeIndex].instructions) != 2 {
+	if len(compiler.scopes[compiler.scopeIndex].instructions) != 2 {
 		t.Errorf("instructions length wrong. got=%d",
 			len(compiler.scopes[compiler.scopeIndex].instructions))
-    }
+	}
 
-    last = compiler.scopes[compiler.scopeIndex].lastInstruction
-    if last.Opcode != code.OpAdd {
+	last = compiler.scopes[compiler.scopeIndex].lastInstruction
+	if last.Opcode != code.OpAdd {
 		t.Errorf("lastInstruction.Opcode wrong. got=%d, want=%d",
 			last.Opcode, code.OpAdd)
-    }
+	}
 
-    previous := compiler.scopes[compiler.scopeIndex].previousInstruction
-    if previous.Opcode != code.OpMul {
+	previous := compiler.scopes[compiler.scopeIndex].previousInstruction
+	if previous.Opcode != code.OpMul {
 		t.Errorf("lastInstruction.Opcode wrong. got=%d, want=%d",
 			last.Opcode, code.OpMul)
-    }
+	}
 }
 
 func runCompilerTests(t *testing.T, tests []compilerTestCase) {
