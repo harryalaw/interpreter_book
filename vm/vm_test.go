@@ -184,15 +184,15 @@ func TestFunctionsWithReturnStatement(t *testing.T) {
                 `,
 			expected: 99,
 		},
-        {
-            input: `
+		{
+			input: `
             let earlyExit = fn () { return 99; return 100; };
             earlyExit();
             `,
-            expected: 99,
-        },
+			expected: 99,
+		},
 	}
-    runVmTests(t, tests)
+	runVmTests(t, tests)
 }
 
 type vmTestCase struct {
