@@ -478,7 +478,7 @@ func TestFunctions(t *testing.T) {
 			input: `fn() {}`,
 			expectedConstants: []interface{}{
 				[]code.Instructions{
-					code.Make(code.OpReturnValue),
+					code.Make(code.OpReturn),
 				},
 			},
 			expectedInstructions: []code.Instructions{

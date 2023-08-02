@@ -175,7 +175,7 @@ func TestCallingFunctionsWithoutArguments(t *testing.T) {
 	runVmTests(t, tests)
 }
 
-func testFunctionsWithReturnStatement(t *testing.T) {
+func TestFunctionsWithReturnStatement(t *testing.T) {
 	tests := []vmTestCase{
 		{
 			input: `
@@ -195,7 +195,7 @@ func testFunctionsWithReturnStatement(t *testing.T) {
 	runVmTests(t, tests)
 }
 
-func testFunctionsWithoutReturnValue(t *testing.T) {
+func TestFunctionsWithoutReturnValue(t *testing.T) {
 	tests := []vmTestCase{
 		{
 			input: `
@@ -214,6 +214,21 @@ func testFunctionsWithoutReturnValue(t *testing.T) {
 			expected: Null,
 		},
 	}
+	runVmTests(t, tests)
+}
+
+func TestFirstClassFunctions(t *testing.T) {
+	tests := []vmTestCase{
+		{
+			input: `
+            let returnOne = fn() { 1; };
+            let returnsOneReturner = fn () { returnOne; };
+            returnsOneReturner()()
+            `,
+			expected: 1,
+		},
+	}
+
 	runVmTests(t, tests)
 }
 
