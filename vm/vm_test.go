@@ -175,7 +175,7 @@ func TestCallingFunctionsWithoutArguments(t *testing.T) {
 	runVmTests(t, tests)
 }
 
-func TestFunctionsWithReturnStatement(t *testing.T) {
+func testFunctionsWithReturnStatement(t *testing.T) {
 	tests := []vmTestCase{
 		{
 			input: `
@@ -190,6 +190,28 @@ func TestFunctionsWithReturnStatement(t *testing.T) {
             earlyExit();
             `,
 			expected: 99,
+		},
+	}
+	runVmTests(t, tests)
+}
+
+func testFunctionsWithoutReturnValue(t *testing.T) {
+	tests := []vmTestCase{
+		{
+			input: `
+            let noReturn = fn() { };
+            noReturn();
+            `,
+			expected: Null,
+		},
+		{
+			input: `
+            let noReturn = fn() { };
+            let noReturnTwo = fn() { noReturn(); };
+            noReturn();
+            noReturnTwo();
+            `,
+			expected: Null,
 		},
 	}
 	runVmTests(t, tests)
