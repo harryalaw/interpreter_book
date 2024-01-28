@@ -28,6 +28,16 @@ var Builtins = []struct {
 		},
 	},
 	{
+		"puts", &Builtin{
+			Fn: func(args ...Object) Object {
+				for _, arg := range args {
+					fmt.Println(arg.Inspect())
+				}
+				return nil
+			},
+		},
+	},
+	{
 		"first",
 		&Builtin{
 			Fn: func(args ...Object) Object {
@@ -114,16 +124,6 @@ var Builtins = []struct {
 				newArr[length] = args[1]
 
 				return &Array{Elements: newArr}
-			},
-		},
-	},
-	{
-		"puts", &Builtin{
-			Fn: func(args ...Object) Object {
-				for _, arg := range args {
-					fmt.Println(arg.Inspect())
-				}
-				return nil
 			},
 		},
 	},
