@@ -752,8 +752,8 @@ func TestBuiltins(t *testing.T) {
 				},
 			},
 			expectedInstructions: []code.Instructions{
-                code.Make(code.OpConstant, 0),
-                code.Make(code.OpPop),
+				code.Make(code.OpConstant, 0),
+				code.Make(code.OpPop),
 			},
 		},
 	}
