@@ -3,10 +3,11 @@ package compiler
 type SymbolScope string
 
 const (
-	BuiltinScope SymbolScope = "BUILTIN"
-	LocalScope   SymbolScope = "LOCAL"
-	GlobalScope  SymbolScope = "GLOBAL"
-	FreeScope    SymbolScope = "FREE"
+	BuiltinScope  SymbolScope = "BUILTIN"
+	LocalScope    SymbolScope = "LOCAL"
+	GlobalScope   SymbolScope = "GLOBAL"
+	FreeScope     SymbolScope = "FREE"
+	FunctionScope SymbolScope = "FUNCTION"
 )
 
 type Symbol struct {
@@ -47,18 +48,14 @@ func (s *SymbolTable) Define(name string) Symbol {
 	return symbol
 }
 
-func (s *SymbolTable) defineFree(original Symbol) Symbol {
-	s.FreeSymbols = append(s.FreeSymbols, original)
-
-	symbol := Symbol{Name: original.Name, Index: len(s.FreeSymbols) - 1}
-	symbol.Scope = FreeScope
-
-	s.store[original.Name] = symbol
+func (s *SymbolTable) DefineBuiltin(index int, name string) Symbol {
+	symbol := Symbol{Name: name, Index: index, Scope: BuiltinScope}
+	s.store[name] = symbol
 	return symbol
 }
 
-func (s *SymbolTable) DefineBuiltin(index int, name string) Symbol {
-	symbol := Symbol{Name: name, Index: index, Scope: BuiltinScope}
+func (s *SymbolTable) DefineFunctionName(name string) Symbol {
+	symbol := Symbol{Name: name, Index: 0, Scope: FunctionScope}
 	s.store[name] = symbol
 	return symbol
 }
@@ -77,4 +74,14 @@ func (s *SymbolTable) Resolve(name string) (Symbol, bool) {
 		return free, true
 	}
 	return obj, ok
+}
+
+func (s *SymbolTable) defineFree(original Symbol) Symbol {
+	s.FreeSymbols = append(s.FreeSymbols, original)
+
+	symbol := Symbol{Name: original.Name, Index: len(s.FreeSymbols) - 1}
+	symbol.Scope = FreeScope
+
+	s.store[original.Name] = symbol
+	return symbol
 }
